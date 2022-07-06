@@ -1,10 +1,9 @@
-package com.tmobile.cloud.gcprules.bigquery;
+package com.tmobile.cloud.gcprules.pubsub;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.gcprules.bigquery.DatasetAccesRule;
+import com.tmobile.cloud.gcprules.encryption.CMKEncryptionRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
-import com.tmobile.cloud.gcprules.vminstance.VMInstanceWithPublicAccess;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import org.junit.Before;
@@ -20,6 +19,7 @@ import java.util.Map;
 import static com.tmobile.cloud.gcprules.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -28,11 +28,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PacmanUtils.class, GCPUtils.class})
-public class DatasetAccessRuleTest {
-
+public class CMKEncryptionRuleTest {
     @InjectMocks
-    DatasetAccesRule datasetAccesRule;
-
+    CMKEncryptionRule cmkEncryptionRule;
     @Before
     public void setUp() {
         mockStatic(PacmanUtils.class);
@@ -44,12 +42,12 @@ public class DatasetAccessRuleTest {
 
 
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForBigQuerydataset());
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForPubSubEncryptionSuccess());
 
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(datasetAccesRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
+        assertThat(cmkEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
 
@@ -58,24 +56,24 @@ public class DatasetAccessRuleTest {
 
 
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForBigQuerydatasetFailure());
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForPubSubEncryptionFailure());
 
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(datasetAccesRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+        assertThat(cmkEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
     @Test
     public void executeFailureTestWithInvalidInputException() throws Exception {
 
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForBigQuerydatasetFailure());
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForPubSubEncryptionFailure());
 
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
-        assertThatThrownBy(() -> datasetAccesRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+        assertThatThrownBy(() -> cmkEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
 
     public static Map<String, String> getMapString(String passRuleResourceId) {
@@ -85,9 +83,14 @@ public class DatasetAccessRuleTest {
         commonMap.put("severity", "high");
         commonMap.put("ruleCategory", "security");
         commonMap.put("accountid", "12345");
-        commonMap.put("ruleId", "GCP_BigQuery_dataset_public_access_version-1_Rule");
-        commonMap.put("policyId", "GCP_BigQuery_dataset_public_access_version-1");
+        commonMap.put("ruleId", "GCP_PubSub_CMK_Encryption");
+        commonMap.put("policyId", "GCP_PubSub_CMK_Encryption");
         commonMap.put("policyVersion", "version-1");
         return commonMap;
+    }
+
+    @Test
+    public void getHelpTextTest() {
+        assertThat(cmkEncryptionRule.getHelpText(), is(notNullValue()));
     }
 }
