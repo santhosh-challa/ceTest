@@ -1,0 +1,4 @@
+[map "8b0d2947-3ad7-3820-894e-3d26df0399bc"]
+	object = 049448e06ac1103cb2ff396b0bc53e28b8cd3215
+	subtree = jobs
+	type = extract tree

@@ -1,0 +1,8 @@
+[map "354e4537-a86e-3458-8301-5b8fe43d241c"]
+	object = b92f7f492ec006deb1599456aaf1b458986333af
+	subtree = jobs
+	type = expand tree
+[map "d9f1d1fe-66c6-382b-a1c5-ce31a6d998b4"]
+	object = 653e7526622f50491767ccc69b03ec301a078337
+	path = jobs-oss
+	type = expand module
