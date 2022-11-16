@@ -1,0 +1,13 @@
+[module "2d5cf948-fdfb-3e32-8a3b-78e0d50716c7"]
+	conflict = request-pull
+	path = jobs-oss
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/master
+	subtree = jobs
+	url = agnostic://gh/566346191
+[map "6d150bf3-9c9c-3fef-bd05-b073c6751e6e"]
+	object = 935d03416543cc5493b0ae43ed4b1d2f1af0c6c6
+	path = jobs-oss
+	stage = sync
+	type = extract module
