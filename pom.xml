@@ -51,7 +51,7 @@
 		<module>azure-discovery</module>
 		<module>azure-discovery2</module>
 		<module>azure-discovery3</module>
-
+		<module>azure-discovery6</module>
         <module>gcp-discovery</module>
         <module>job-scheduler</module>
     </modules>
